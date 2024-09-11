@@ -18,7 +18,7 @@ const Onboarding = () => {
         }}
         className="w-full flex justify-end items-end p-5"
       >
-        <Text className="text-black text-md font-JakartaBold">Skip</Text>
+        <Text className="text-black text-base font-JakartaBold">Skip</Text>
       </TouchableOpacity>
 
       <Swiper
@@ -45,7 +45,7 @@ const Onboarding = () => {
               </Text>
             </View>
 
-            <Text className="text-md font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3 ">
+            <Text className="text-base font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3 ">
               {item.description}
             </Text>
           </View>
