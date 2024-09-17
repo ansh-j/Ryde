@@ -5,11 +5,13 @@ import { icons, images } from "@/constants";
 import { useLocationStore } from "@/store";
 import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Image, StatusBar, TouchableOpacity } from "react-native";
 import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { router } from "expo-router";
+
+const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 const recentRides = [
   {
@@ -128,8 +130,8 @@ export default function Page() {
     longitude: number;
     address: string;
   }) => {
-    setDestinationLocation(location); 
-    router.push("/(root)/find-ride")
+    setDestinationLocation(location);
+    router.push(`/(root)/find-ride`);
   };
 
   useEffect(() => {
@@ -142,15 +144,21 @@ export default function Page() {
 
       let location = await Location.getCurrentPositionAsync({});
 
-      const address = await Location.reverseGeocodeAsync({
-        latitude: location.coords?.latitude!,
-        longitude: location.coords?.longitude!,
-      });
+      let { latitude, longitude } = location.coords;
+
+      // console.log(latitude, longitude);
+
+      const address = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${latitude},${longitude}&key=${googlePlacesApiKey}`
+      )
+        .then((response) => response.json())
+        .then((responseJson) => responseJson);
+      // console.log(address.results[3].formatted_address);
 
       setUserLocation({
-        latitude: location.coords?.latitude,
-        longitude: location.coords?.longitude,
-        address: `${address[0].name}, ${address[0].region}`,
+        latitude: latitude,
+        longitude: longitude,
+        address: address.results[0].formatted_address,
       });
     })();
   }, []);
@@ -216,6 +224,7 @@ export default function Page() {
           </>
         )}
       />
+      <StatusBar barStyle={'dark-content'}/>
     </SafeAreaView>
   );
 }
